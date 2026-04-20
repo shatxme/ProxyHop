@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "ProxyHop",
+  "short_name": "ProxyHop",
+  "version": "1.0.0",
+  "description": "Chrome SOCKS5 proxy switcher with saved profiles and quick connect/disconnect.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "proxy",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "ProxyHop",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  }
+}

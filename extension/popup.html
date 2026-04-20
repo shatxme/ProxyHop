@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ProxyHop</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero panel">
+        <a class="ip-check" href="https://httpbin.org/ip" target="_blank" rel="noreferrer" aria-label="Open IP check">
+          <span class="ip-check-icon" aria-hidden="true">◎</span>
+          <span>IP Check</span>
+        </a>
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg class="brand-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="m10.586 5.414-5.172 5.172" />
+              <path d="m18.586 13.414-5.172 5.172" />
+              <path d="M6 12h12" />
+              <circle cx="12" cy="20" r="2" />
+              <circle cx="12" cy="4" r="2" />
+              <circle cx="20" cy="12" r="2" />
+              <circle cx="4" cy="12" r="2" />
+            </svg>
+          </div>
+          <div>
+            <h1>ProxyHop</h1>
+            <p class="muted">SOCKS5 proxy switcher</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <p id="control-line" class="muted hidden"></p>
+        <p id="message-bar" class="message hidden"></p>
+
+        <section class="connections-block">
+          <div id="connections-list" class="connections-list" aria-live="polite"></div>
+        </section>
+
+        <section class="editor add-panel">
+          <form id="profile-form" class="add-form">
+            <input id="endpoint-input" name="endpoint" type="text" placeholder="Paste here your IP:Port" autocomplete="off" required>
+            <button id="save-btn" type="submit">Add new connection</button>
+          </form>
+        </section>
+      </section>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
