@@ -16,12 +16,13 @@ Chrome extension that switches Chrome to a remote passwordless SOCKS5 proxy with
 
 Chrome proxy extensions do not handle SOCKS5 username/password setup well in a simple reusable way, so `ProxyHop` is built for passwordless SOCKS5 proxies only.
 
-For convenience, this repo includes `scripts/setup-dante.sh` to install a matching Dante proxy on an Ubuntu/Debian VPS. The helper script is kept outside the extension package build, so users can grab it from the repo and use the latest extension release separately.
+For convenience, this repo includes `scripts/setup-dante.sh` to install a matching Dante proxy on an Ubuntu/Debian VPS.
 
-To install a matching Dante proxy:
+
+To install a Dante proxy:
 
 ```bash
-sudo bash scripts/setup-dante.sh 24861
+wget -qO- https://raw.githubusercontent.com/shatxme/ProxyHop/main/scripts/setup-dante.sh | sudo bash -s -- 24861
 ```
 
 The script installs `danted`, opens the port in `ufw` when enabled, and writes a passwordless config with:
@@ -33,11 +34,6 @@ clientmethod: none
 
 After it finishes, copy the printed `IP:Port` value into the `ProxyHop` Chrome extension popup.
 
-To validate the proxy from the server setup side:
-
-```bash
-curl --proxy socks5h://SERVER_IP:24861 https://ifconfig.me
-```
 
 ## Install the extension
 
