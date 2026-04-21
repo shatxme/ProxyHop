@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ProxyHop",
   "short_name": "ProxyHop",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Chrome SOCKS5 proxy switcher with saved profiles and quick connect/disconnect.",
   "minimum_chrome_version": "116",
   "permissions": [

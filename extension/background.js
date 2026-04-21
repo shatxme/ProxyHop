@@ -215,6 +215,15 @@ async function handleProxyError(details) {
     return;
   }
 
+  // Ignore transient proxy errors that Chrome can emit while a working proxy
+  // is still active. Only keep fatal failures visible in the popup.
+  if (!details.fatal) {
+    if (state.lastError) {
+      await chrome.storage.local.set({ lastError: "" });
+    }
+    return;
+  }
+
   await chrome.storage.local.set({ lastError: formatProxyError(details) });
 }
 
