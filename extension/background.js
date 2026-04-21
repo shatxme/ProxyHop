@@ -205,6 +205,19 @@ function formatProxyError(details) {
   return `${severity} ${details.error}.${detailText}`.trim();
 }
 
+async function handleProxyError(details) {
+  const [state, proxy] = await Promise.all([getStoredState(), getProxyConfig()]);
+
+  if (!state.activeProfileId || !isExtensionControlledProxy(proxy)) {
+    if (state.lastError) {
+      await chrome.storage.local.set({ lastError: "" });
+    }
+    return;
+  }
+
+  await chrome.storage.local.set({ lastError: formatProxyError(details) });
+}
+
 async function handleMessage(message) {
   switch (message?.type) {
     case "getState":
@@ -234,7 +247,7 @@ chrome.runtime.onStartup.addListener(() => {
 });
 
 chrome.proxy.onProxyError.addListener((details) => {
-  void chrome.storage.local.set({ lastError: formatProxyError(details) });
+  void handleProxyError(details);
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {

@@ -1,7 +1,7 @@
 {
   "name": "proxyhop-chrome",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Chrome SOCKS5 proxy switcher with saved profiles and quick connect/disconnect.",
   "scripts": {
     "check": "node --check extension/background.js && node --check extension/popup.js",
