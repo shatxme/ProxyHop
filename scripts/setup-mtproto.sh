@@ -55,9 +55,31 @@ install_packages() {
 
 ensure_mtproxy_user() {
   if ! id -u mtproxy >/dev/null 2>&1; then
-    useradd --system --home-dir "${WORKDIR}" --create-home --user-group --shell /usr/sbin/nologin mtproxy 2>/dev/null \
-      || useradd --system --home-dir "${WORKDIR}" --create-home --user-group --shell /sbin/nologin mtproxy
+    useradd --system --home-dir "${WORKDIR}" --no-create-home --user-group --shell /usr/sbin/nologin mtproxy 2>/dev/null \
+      || useradd --system --home-dir "${WORKDIR}" --no-create-home --user-group --shell /sbin/nologin mtproxy
   fi
+}
+
+prepare_workdir() {
+  if [[ -d "${WORKDIR}/.git" ]]; then
+    git -C "${WORKDIR}" pull --ff-only
+    return
+  fi
+
+  if [[ ! -e "${WORKDIR}" ]]; then
+    git clone https://github.com/TelegramMessenger/MTProxy.git "${WORKDIR}"
+    return
+  fi
+
+  if [[ -z "$(ls -A "${WORKDIR}")" ]]; then
+    git clone https://github.com/TelegramMessenger/MTProxy.git "${WORKDIR}"
+    return
+  fi
+
+  tmpdir="$(mktemp -d)"
+  git clone https://github.com/TelegramMessenger/MTProxy.git "${tmpdir}/MTProxy"
+  cp -a "${tmpdir}/MTProxy/." "${WORKDIR}/"
+  rm -rf "${tmpdir}"
 }
 
 open_firewall_port() {
@@ -77,11 +99,7 @@ install_packages
 
 ensure_mtproxy_user
 
-if [[ ! -d "${WORKDIR}/.git" ]]; then
-  git clone https://github.com/TelegramMessenger/MTProxy.git "${WORKDIR}"
-else
-  git -C "${WORKDIR}" pull --ff-only
-fi
+prepare_workdir
 
 make -C "${WORKDIR}"
 
