@@ -16,7 +16,10 @@ Chrome extension that switches Chrome to a remote passwordless SOCKS5 proxy with
 
 Chrome proxy extensions do not handle SOCKS5 username/password setup well in a simple reusable way, so `ProxyHop` is built for passwordless SOCKS5 proxies only.
 
-For convenience, this repo includes `scripts/setup-dante.sh` to install a matching Dante proxy on an Ubuntu/Debian VPS.
+For convenience, this repo includes:
+
+- `scripts/setup-dante.sh` to install a matching Dante SOCKS5 proxy on an Ubuntu/Debian VPS
+- `scripts/setup-mtproto.sh` to install Telegram MTProto on the same VPS if you also want a Telegram-specific proxy
 
 
 To install a Dante proxy:
@@ -33,6 +36,29 @@ clientmethod: none
 ```
 
 After it finishes, copy the printed `IP:Port` value into the `ProxyHop` Chrome extension popup.
+
+To install MTProto for Telegram on the same server:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/shatxme/ProxyHop/main/scripts/setup-mtproto.sh | sudo bash -s -- 443 8888
+```
+
+This installs Telegram's official `MTProxy`, creates a `systemd` service, opens the MTProto port in `ufw` when enabled, and prints a `tg://proxy?...` link you can open in Telegram.
+
+## Running Both On One VPS
+
+`Dante` and `MTProto` can run on the same server at the same time as long as they use different ports.
+
+Example:
+
+- `SOCKS5` via Dante on `24861`
+- `MTProto` for Telegram on `443`
+
+Use the SOCKS5 `IP:Port` in the `ProxyHop` extension.
+
+Use the printed `tg://proxy?...` link or the MTProto server, port, and secret inside Telegram.
+
+`ProxyHop` itself does not use MTProto; MTProto is only for Telegram clients.
 
 
 ## Install the extension
