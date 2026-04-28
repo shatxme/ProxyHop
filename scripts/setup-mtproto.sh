@@ -5,20 +5,77 @@ MT_PORT="${1:-443}"
 STATS_PORT="${2:-8888}"
 WORKDIR="/opt/mtproxy"
 SERVICE_NAME="mtproxy"
+OS_ID=""
+OS_LIKE=""
+PKG_MANAGER=""
 
 if [[ "${EUID}" -ne 0 ]]; then
   printf 'Run this script as root\n' >&2
   exit 1
 fi
 
-export DEBIAN_FRONTEND=noninteractive
+detect_os() {
+  if [[ ! -f /etc/os-release ]]; then
+    printf 'Unsupported OS: missing /etc/os-release\n' >&2
+    exit 1
+  fi
 
-apt-get update
-apt-get install -y git curl build-essential libssl-dev zlib1g-dev ufw ca-certificates openssl
+  # shellcheck disable=SC1091
+  . /etc/os-release
 
-if ! id -u mtproxy >/dev/null 2>&1; then
-  adduser --system --home "${WORKDIR}" --group --disabled-login mtproxy
-fi
+  OS_ID="${ID:-}"
+  OS_LIKE="${ID_LIKE:-}"
+
+  case "${OS_ID}:${OS_LIKE}" in
+    ubuntu:*|debian:*|*:debian*)
+      PKG_MANAGER="apt"
+      ;;
+    almalinux:*|rocky:*|centos:*|rhel:*|*:rhel*|*:fedora*)
+      PKG_MANAGER="dnf"
+      ;;
+    *)
+      printf 'Unsupported OS: %s\n' "${OS_ID:-unknown}" >&2
+      exit 1
+      ;;
+  esac
+}
+
+install_packages() {
+  case "${PKG_MANAGER}" in
+    apt)
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update
+      apt-get install -y git curl build-essential libssl-dev zlib1g-dev ufw ca-certificates openssl
+      ;;
+    dnf)
+      dnf install -y git curl gcc make openssl-devel zlib-devel firewalld ca-certificates openssl
+      ;;
+  esac
+}
+
+ensure_mtproxy_user() {
+  if ! id -u mtproxy >/dev/null 2>&1; then
+    useradd --system --home-dir "${WORKDIR}" --create-home --user-group --shell /usr/sbin/nologin mtproxy 2>/dev/null \
+      || useradd --system --home-dir "${WORKDIR}" --create-home --user-group --shell /sbin/nologin mtproxy
+  fi
+}
+
+open_firewall_port() {
+  if command -v ufw >/dev/null 2>&1 && ufw status | grep -q 'Status: active'; then
+    ufw allow "${MT_PORT}/tcp"
+    return
+  fi
+
+  if command -v firewall-cmd >/dev/null 2>&1 && systemctl is-active --quiet firewalld; then
+    firewall-cmd --permanent --add-port="${MT_PORT}/tcp"
+    firewall-cmd --reload
+  fi
+}
+
+detect_os
+install_packages
+
+ensure_mtproxy_user
 
 if [[ ! -d "${WORKDIR}/.git" ]]; then
   git clone https://github.com/TelegramMessenger/MTProxy.git "${WORKDIR}"
@@ -44,8 +101,6 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=mtproxy
-Group=mtproxy
 WorkingDirectory=${WORKDIR}
 ExecStart=${WORKDIR}/objs/bin/mtproto-proxy -u mtproxy -p ${STATS_PORT} -H ${MT_PORT} -S ${SECRET} --aes-pwd ${WORKDIR}/proxy-secret ${WORKDIR}/proxy-multi.conf
 Restart=always
@@ -55,9 +110,7 @@ RestartSec=3
 WantedBy=multi-user.target
 EOF
 
-if ufw status | grep -q 'Status: active'; then
-  ufw allow "${MT_PORT}/tcp"
-fi
+open_firewall_port
 
 systemctl daemon-reload
 systemctl enable "${SERVICE_NAME}"

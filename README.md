@@ -18,7 +18,7 @@ Chrome proxy extensions do not handle SOCKS5 username/password setup well in a s
 
 For convenience, this repo includes:
 
-- `scripts/setup-dante.sh` to install a matching Dante SOCKS5 proxy on an Ubuntu/Debian VPS
+- `scripts/setup-dante.sh` to install a matching Dante SOCKS5 proxy on a Debian/Ubuntu or AlmaLinux VPS
 - `scripts/setup-mtproto.sh` to install Telegram MTProto on the same VPS if you also want a Telegram-specific proxy
 
 
@@ -35,6 +35,8 @@ socksmethod: none
 clientmethod: none
 ```
 
+The installer detects Debian/Ubuntu vs AlmaLinux/RHEL-style systems automatically. On AlmaLinux it uses `dnf`, installs `dante-server` from `epel`, and opens the port with `firewalld` when it is active.
+
 After it finishes, copy the printed `IP:Port` value into the `ProxyHop` Chrome extension popup.
 
 To install MTProto for Telegram on the same server:
@@ -44,6 +46,8 @@ wget -qO- https://raw.githubusercontent.com/shatxme/ProxyHop/main/scripts/setup-
 ```
 
 This installs Telegram's official `MTProxy`, creates a `systemd` service, opens the MTProto port in `ufw` when enabled, and prints a `tg://proxy?...` link you can open in Telegram.
+
+The installer also detects Debian/Ubuntu vs AlmaLinux/RHEL-style systems automatically and uses `ufw` or `firewalld` accordingly.
 
 ## Running Both On One VPS
 
