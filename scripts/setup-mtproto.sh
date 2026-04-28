@@ -134,4 +134,4 @@ printf '%s:%s\n' "${SERVER_IP:-SERVER_IP}" "${MT_PORT}"
 printf 'Secret\n'
 printf '%s\n' "${SECRET}"
 printf 'Telegram link\n'
-printf 'tg://proxy?server=%s&port=%s&secret=%s\n' "${SERVER_IP:-SERVER_IP}" "${MT_PORT}" "${SECRET}"
+printf 'https://t.me/proxy?server=%s&port=%s&secret=%s\n' "${SERVER_IP:-SERVER_IP}" "${MT_PORT}" "${SECRET}"

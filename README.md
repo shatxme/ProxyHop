@@ -45,7 +45,7 @@ To install MTProto for Telegram on the same server:
 wget -qO- https://raw.githubusercontent.com/shatxme/ProxyHop/main/scripts/setup-mtproto.sh | sudo bash -s -- 443 8888
 ```
 
-This installs Telegram's official `MTProxy`, creates a `systemd` service, opens the MTProto port in `ufw` when enabled, and prints a `tg://proxy?...` link you can open in Telegram.
+This installs Telegram's official `MTProxy`, creates a `systemd` service, opens the MTProto port in `ufw` when enabled, and prints a `https://t.me/proxy?...` link you can open in Telegram.
 
 The installer also detects Debian/Ubuntu vs AlmaLinux/RHEL-style systems automatically and uses `ufw` or `firewalld` accordingly.
 
@@ -60,7 +60,7 @@ Example:
 
 Use the SOCKS5 `IP:Port` in the `ProxyHop` extension.
 
-Use the printed `tg://proxy?...` link or the MTProto server, port, and secret inside Telegram.
+Use the printed `https://t.me/proxy?...` link or the MTProto server, port, and secret inside Telegram.
 
 `ProxyHop` itself does not use MTProto; MTProto is only for Telegram clients.
 
