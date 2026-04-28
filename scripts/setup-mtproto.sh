@@ -66,15 +66,7 @@ prepare_workdir() {
     return
   fi
 
-  if [[ ! -e "${WORKDIR}" ]]; then
-    git clone https://github.com/TelegramMessenger/MTProxy.git "${WORKDIR}"
-    return
-  fi
-
-  if [[ -z "$(ls -A "${WORKDIR}")" ]]; then
-    git clone https://github.com/TelegramMessenger/MTProxy.git "${WORKDIR}"
-    return
-  fi
+  mkdir -p "${WORKDIR}"
 
   tmpdir="$(mktemp -d)"
   git clone https://github.com/TelegramMessenger/MTProxy.git "${tmpdir}/MTProxy"
